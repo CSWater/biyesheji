@@ -47,11 +47,7 @@ void blitz_forward(size_t N, size_t H, size_t W, size_t C,
               for(k = 0; k < K; ++k) {
               ACCESS(output, n, p, q, k, P, Q, K) += 
                 ACCESS(input, n, ih + r, iw + s, c, H, W, C) *
-                
                 ACCESS(filter, r, s, c, k, S, C, K);
-//              cout << "k:" << k << " c:" << c << " P:" << p << " Q:" << q << " output:" << ACCESS(output, n, p, q, k, P, Q, K) \
-                << " input:" << ACCESS(input, n, ih + s, iw + r, c, H, W, C) \
-                << " filter:" << ACCESS(filter, r, s, c, k, S, C, K) <<  endl;
               }
             }
           }
