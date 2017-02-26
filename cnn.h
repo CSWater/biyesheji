@@ -21,11 +21,10 @@
 
 #include<stddef.h>
 #include<omp.h>
-#define EPSILON 0.000001f
-//#define ACCESS(psrc, i, j, k, m, J, K, M) (*(psrc + (m) + (k) * M + (j) * K * M + (i) * J * K * M))
-#define ABS(x) ((x) >  0 ? (x) : (-x);
+#include<iostream>
+using std::cout;
+using std::endl;
 
-#define BLITZ_ALIGMENT 64
 
 typedef struct {
     size_t nImg;
@@ -50,11 +49,21 @@ typedef struct {
 /***************************************************
  * common functions
  * *************************************************/
-void init_buf(float *buf, long size, int initPos, int initOne);
+void init_buf(float *buf, size_t size, int initPos, int initOne);
 
-void copy_buf(float *src, float  *dst, long size);
+void copy_buf(float const *src, float  *dst, size_t size);
 
-void zero_buf(float *buf, long size);
+void copy_NCHW_to_NHWC(const float* nchw, float* nhwc, size_t N, size_t H, size_t W, size_t C);
+
+void copy_NHWC_to_NCHW(const float* nhwc, float* nchw, size_t N, size_t H, size_t W, size_t C);
+
+void copy_KCRS_to_RSCK(const float *kcrs, float *rsck, size_t R, size_t S, size_t C, size_t K);
+
+void copy_RSCK_to_KCRS(const float *rsck, float *kcrs, size_t R, size_t S, size_t C, size_t K);
+
+void zero_buf(float *buf, size_t size);
+
+void compare_buf(const float *buf_one, const float *buf_two, size_t size);
 /*  allocate aligned memory */
 void *blitz_aligned_malloc(size_t size, size_t alignment);
 /*  free aligned memory */

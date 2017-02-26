@@ -103,11 +103,11 @@
 #numactl -m 1 ./samples/mic/convolution/convolution forward convolution_blas_gemm 2 14  14  128 256  512  3  3  0 1 12 12
 #numactl -m 1 ./samples/mic/convolution/convolution forward convolution_blas_gemm 2 14  14  128 512  1024 3  3  0 1 12 12
 #numactl -m 1 ./samples/mic/convolution/convolution forward convolution_blas_gemm 2 14  14  128 1024 1024 3  3  0 1 12 12
-numactl -m 1 ./main forward convolution_xsmm_direct 2 231 231 128 3    96   11 11 0 4 56 56
-numactl -m 1 ./main forward convolution_xsmm_direct 2 28  28  128 96   256  5  5  0 1 24 24
-numactl -m 1 ./main forward convolution_xsmm_direct 2 14  14  128 256  512  3  3  0 1 12 12
-numactl -m 1 ./main forward convolution_xsmm_direct 2 14  14  128 512  1024 3  3  0 1 12 12
-numactl -m 1 ./main forward convolution_xsmm_direct 2 14  14  128 1024 1024 3  3  0 1 12 12
+numactl -m 1 ./main forward convolution_xsmm_direct 1 231 231 128 3    96   11 11 0 4 56 56
+#numactl -m 1 ./main forward convolution_xsmm_direct 2 28  28  128 96   256  5  5  0 1 24 24
+#numactl -m 1 ./main forward convolution_xsmm_direct 2 14  14  128 256  512  3  3  0 1 12 12
+#numactl -m 1 ./main forward convolution_xsmm_direct 2 14  14  128 512  1024 3  3  0 1 12 12
+#numactl -m 1 ./main forward convolution_xsmm_direct 2 14  14  128 1024 1024 3  3  0 1 12 12
 ###backward:
 #numactl -m 1 ./samples/mic/convolution/convolution backward convolution_blas_gemm 2 231 231 128 3    96   11 11 0 4 56 56
 #numactl -m 1 ./samples/mic/convolution/convolution backward convolution_blas_gemm 2 28  28  128 96   256  5  5  0 1 24 24

@@ -18,9 +18,9 @@
  */
 #include<iostream>
 #include"naive_conv.h"
+#include"blitz_macro.h"
 using std::cerr;
 using std::endl;
-#define ACCESS(psrc, i, j, k, m, J, K, M) (*(psrc + (m) + (k) * M + (j) * K * M + (i) * J * K * M))
 
 void naive_conv_fp(naive_conv_t* param, const float* input, float* output, const float* filter) {
   size_t nImg      = param->nImg;

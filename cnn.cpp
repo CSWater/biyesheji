@@ -20,7 +20,7 @@
 #include"cnn.h"
 #include<stdlib.h>
 #include<stdint.h>
-
+#include"blitz_macro.h"
 
 /********************************************
     internal functions
@@ -45,27 +45,89 @@ int blitz_malloc(void **memory, size_t size, size_t alignment) {
 /***********************************************
  * API
  * *********************************************/
-void zero_buf(float *buf, long size) {
+void zero_buf(float *buf, size_t size) {
     int i;
     for(i = 0; i < size; ++i) {
         buf[i] = 0.0f;
     }
 }
 
-void copy_buf(float *src, float *dst, long size) {
-    int i;
+void copy_buf(float const *src, float *dst, size_t size) {
+    size_t i;
     for(i = 0; i < size; ++i) {
         dst[i] = src[i];
     }
 }
 
-void init_buf(float *buf, long size, int initPos, int initOne) {
-    int i;
+void copy_NCHW_to_NHWC(const float* nchw, float* nhwc, size_t N, size_t H, size_t W, size_t C) {
+  size_t n, h, w, c;
+  for ( n = 0; n < N; n++ ) {
+    for ( h = 0; h < H; h++ ) {
+      for ( w = 0; w < W; w++ ) {
+        for ( c = 0; c < C; c++ ) {
+          ACCESS(nhwc, n, h, w, c, H, W, C) = ACCESS(nchw, n, c, h, w, C, H, W);
+        }
+      }
+    }
+  }
+}
+
+void copy_NHWC_to_NCHW(const float* nhwc, float* nchw, size_t N, size_t H, size_t W, size_t C) {
+  size_t n, h, w, c;
+  for(n = 0; n < N; n++) {
+    for(h = 0; h < H; h++) {
+      for(w = 0; w < W; w++) {
+        for(c = 0; c < C; c++) {
+          ACCESS(nchw, n, c, h, w, C, H, W) = ACCESS(nhwc, n, h, w, c, H, W, C);
+        }
+      }
+    }
+  }
+}
+
+void copy_KCRS_to_RSCK(const float *kcrs, float *rsck, size_t R, size_t S, size_t C, size_t K) {
+  size_t r, s, c, k;
+  for ( r = 0; r < R; r++ ) {
+    for ( s = 0; s < S; s++ ) {
+      for ( c = 0; c < C; c++ ) {
+        for ( k = 0; k < K; k++ ) {
+          ACCESS(rsck, r, s, c, k, S, C, K) = ACCESS(kcrs, k, c, r, s, C, R, S);
+        }
+      }
+    }
+  }
+}
+
+void copy_RSCK_to_KCRS(const float *rsck, float *kcrs, size_t R, size_t S, size_t C, size_t K) {
+  size_t r, s, c, k;
+  for ( r = 0; r < R; r++ ) {
+    for ( s = 0; s < S; s++ ) {
+      for ( c = 0; c < C; c++ ) {
+        for ( k = 0; k < K; k++ ) {
+          ACCESS(kcrs, k, c, r, s, C, R, S) = ACCESS(rsck, r, s, c, k, S, C, K); 
+        }
+      }
+    }
+  }
+}
+
+void init_buf(float *buf, size_t size, int initPos, int initOne) {
+    size_t i;
     zero_buf(buf, size);
     for(i = 0; i < size; ++i) {
         buf[i] = (float)((initOne != 0) ? 1.0 : ((initPos != 0) ? drand48() : (0.05 - drand48()/10.0)));
     }
 }
+
+void compare_buf(const float *buf_one, const float *buf_two, size_t size) {
+  size_t i = 0;
+  for(i = 0; i < size; ++i) {
+    if(ABS(buf_one[i] - buf_two[i]) > EPSILON) {
+       cout << "i: " << i << " " << ABS(buf_one[i] - buf_two[i]) << endl;  
+    }
+  }
+}
+
 
 /* aligned memory allocation */
 void *blitz_aligned_malloc(size_t size, size_t alignment) {
