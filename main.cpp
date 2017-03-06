@@ -83,27 +83,35 @@ int main(int argc, char ** argv)
   init_buf(naive_input, size_input, 0, 0);
   init_buf(naive_filter, size_filter, 0, 0);
   zero_buf(output, size_output);
-  copy_NCHW_to_NHWC(naive_input, input, N, H, W, C);
-  copy_KCRS_to_RSCK(naive_filter, filter, R, S, C, K);
+  copy_buf(naive_input, input, size_input);
+  copy_buf(naive_filter, filter, size_filter);
+ // copy_NCHW_to_NHWC(naive_input, input, N, H, W, C);
+ // copy_KCRS_to_RSCK(naive_filter, filter, R, S, C, K);
   //naive convolution
-  naive_conv_fp(&naive_param, naive_input, naive_output, naive_filter);
+//  naive_conv_fp(&naive_param, naive_input, naive_output, naive_filter);
   //NHWC-RSCK convolution
-  blitz_forward(N, H, W, C, K, R, S, P, Q, str_h, input, output, filter);  
+  //blitz_forward(N, H, W, C, K, R, S, P, Q, str_h, input, output, filter);  
+  //ConvolutionForwardNaiveImpl(naive_input, naive_filter, naive_output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
+  ConvolutionForwardNaiveImpl(naive_input, naive_filter, naive_output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
+  ConvolutionForwardVectorImpl(input, filter, output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
   //check result
   copy_NHWC_to_NCHW(output, nchw, N, P, Q, K);
   cout <<  "*************correctness!*****************" << endl;
-  compare_buf(naive_output, nchw, size_output);
+  compare_buf(naive_output, output, size_output);
   //performance
   unsigned long long start, end;
   double cost_time = 0.0;
   double flops = N * K * P * Q * C * R * S * 2 * 1E-9;
   int i = 0;
   for(i = 0; i < iter; ++i) {
+#ifndef TIME_ANALYSE
     start = blitz_timer_tick();
-    blitz_forward(N, H, W, C, K, R, S, P, Q, str_h, input, output, filter);  
+    //blitz_forward(N, H, W, C, K, R, S, P, Q, str_h, input, output, filter);  
+    ConvolutionForwardVectorImpl(input, filter, output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
     end = blitz_timer_tick();
     cost_time = blitz_timer_duration(start, end);
     cout << "GFLOPS: " << flops / cost_time <<  endl;
+#endif
   }
   /*   free memory */
   blitz_aligned_free(naive_input);

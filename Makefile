@@ -12,7 +12,7 @@ SRC_ROOT := src
 LIB_DIR =:= lib
 
 #compiler optimize options
-OPTIMIZE_OPTIONS := -O3
+OPTIMIZE_OPTIONS := -O2
 
 #avx types
 ifeq ($(BLITZ_AVX), 512)
@@ -33,7 +33,7 @@ else
 endif
 
 #compiler options
-CXXFLAGS := -g -Wall -Wno-unused-parameter -Wunknown-pragmas -fPIC $(OPTIMIZE_OPTIONS) $(OPENMP_OPTIONS)
+CXXFLAGS := -Wall -Wno-unused-parameter -Wunknown-pragmas -fPIC $(OPTIMIZE_OPTIONS) $(OPENMP_OPTIONS) $(MODE)
 
 main: main.o cnn.o naive_conv.o blitz_forward.o
 	$(BLITZ_CC) -o main cnn.o naive_conv.o blitz_forward.o main.o $(CXXFLAGS)
@@ -45,7 +45,9 @@ naive_conv.o: naive_conv.cpp
 	$(BLITZ_CC) -c naive_conv.cpp $(CXXFLAGS)
 blitz_forward.o: blitz_forward.cpp
 	$(BLITZ_CC) -c blitz_forward.cpp $(CXXFLAGS)
+blitz_forward.s: blitz_forward.cpp
+	$(BLITZ_CC) -S blitz_forward.cpp $(CXXFLAGS) 
 
 #clean
 clean:
-	rm -f *.o main
+	rm -f *.o main *.s

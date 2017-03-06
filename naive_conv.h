@@ -26,4 +26,16 @@ void naive_conv_bp(naive_conv_t *param, float *input, const float *output, const
 
 void naive_conv_wu(naive_conv_t *param, const float *input, const float *output, float *filter);
 
+/* NHWC - RSCK */
+void ConvolutionForwardNaiveImpl(
+  const float* I,
+  const float* F,
+  float* O,
+  size_t N,
+  size_t C, size_t H, size_t W,
+  size_t R, size_t S,
+  size_t K, size_t P, size_t Q,
+  size_t pad_h, size_t pad_w,
+  size_t str_h, size_t str_w);
+  
 #endif

@@ -19,12 +19,16 @@
 #ifndef _FORWARD_H_
 #define _FORWARD_H_
 #include<stddef.h>
+#include<immintrin.h>
 
-void blitz_forward(size_t nImg, size_t ifh, size_t ifw, size_t nIfm, 
-  size_t nOfm, size_t kh, size_t kw, size_t ofh, size_t ofw, size_t stride,
-  float *input, float *output, float *filter);
+/*  NHWC - RSCK */
+//void blitz_forward(size_t nImg, size_t ifh, size_t ifw, size_t nIfm, 
+//  size_t nOfm, size_t kh, size_t kw, size_t ofh, size_t ofw, size_t str_h,
+//  size_t str_w, size_t pad_h, size_t pad_w,
+//  float *input, float *output, float *filter);
 
-void ConvolutionForwardNaiveImpl(
+
+void ConvolutionForwardVectorImpl(
   const float* I,
   const float* F,
   float* O,
@@ -34,7 +38,7 @@ void ConvolutionForwardNaiveImpl(
   size_t K, size_t P, size_t Q,
   size_t pad_h, size_t pad_w,
   size_t str_h, size_t str_w);
-  
+   
 
 #endif
 

@@ -64,3 +64,41 @@ void naive_conv_fp(naive_conv_t* param, const float* input, float* output, const
   }
 }
 
+#define ACCESS_INPUT_NHWC(i, j, k, v) *(I + ((i * H + j) * W + k) * C + v)
+#define ACCESS_OUTPUT_NPQK(i, j, k, v) *(O + ((i * P + j) * Q + k) * K + v)
+#define ACCESS_FILTER_RSCK(i, j, k, v) *(F + ((i * S + j) * C + k) * K + v)
+/* NHWC - RSCK */
+void ConvolutionForwardNaiveImpl(
+  const float* I,
+  const float* F,
+  float* O,
+  size_t N,
+  size_t C, size_t H, size_t W,
+  size_t R, size_t S,
+  size_t K, size_t P, size_t Q,
+  size_t pad_h, size_t pad_w,
+  size_t str_h, size_t str_w) {
+  #pragma omp parallel for
+  for (size_t n = 0; n < N; ++n) {
+    for (size_t p = 0; p < P; ++p) {
+      int ih = p * str_h - pad_h;
+      for (size_t q = 0; q < Q; ++q) {
+        int iw = q * str_w - pad_w;
+        size_t r_end = ih + R < H ? R : H - ih;
+        size_t s_end = iw + S < W ? S : W - iw;
+        size_t r = ih < 0 ? -ih : 0;
+        for (; r < r_end; ++r) {
+          size_t s = iw < 0 ? -iw : 0;
+          for (; s < s_end; ++s) {
+            for (size_t k = 0; k < K; ++k) {
+              for (size_t c = 0; c < C; ++c) {
+                ACCESS_OUTPUT_NPQK(n, p, q, k) += ACCESS_INPUT_NHWC(n, (ih + r), (iw + s), c) *
+                  ACCESS_FILTER_RSCK(r, s, c, k); 
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
