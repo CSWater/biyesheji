@@ -15,7 +15,6 @@ for (size_t r = 0; r < R; ++r) {
           "mov %%eax, %1\n\t": "=r"(cycles_high), "=r"(cycles_low): : "%rax", "%rbx", "%rcx", "%rdx"
           );
 #endif
-      #include "kblock_pack-inl.h"
       #include "qblock_pack-inl.h"
 #ifdef TIME_ANALYSE
        asm volatile(
@@ -26,10 +25,32 @@ for (size_t r = 0; r < R; ++r) {
           );
        start = (((unsigned long long)cycles_high << 32) | cycles_low);
        end = (((unsigned long long)cycles_high1 << 32) | cycles_low1);
-       cout << "right K and Q block cycles: " << end - start << endl;
+       ptime_cost += end -start;
+       cout << "Q block cycles: " << end - start << endl;
 #endif
       for (size_t k = 0; k < K / (KREG * VEC_LEN); ++k) {
         size_t ik = k * (KREG * VEC_LEN);
+#ifdef TIME_ANALYSE
+        asm volatile(
+            "CPUID\n\t"
+            "RDTSC\n\t"
+            "mov %%edx, %0\n\t"
+            "mov %%eax, %1\n\t": "=r"(cycles_high), "=r"(cycles_low): : "%rax", "%rbx", "%rcx", "%rdx"
+            );
+#endif
+      #include "kblock_pack-inl.h"
+#ifdef TIME_ANALYSE
+        asm volatile(
+           "RDTSCP\n\t"
+           "mov %%edx, %0\n\t"
+           "mov %%eax, %1\n\t"
+           "CPUID\n\t": "=r"(cycles_high1), "=r"(cycles_low1): : "%rax", "%rbx", "%rcx", "%rdx"
+           );
+        start = (((unsigned long long)cycles_high << 32) | cycles_low);
+        end = (((unsigned long long)cycles_high1 << 32) | cycles_low1);
+        cout << "K block cycles: " << end - start << endl;
+        ktime_cost += end -start;
+#endif
         for (size_t bpq = 0; bpq < PQBLOCK / PQREG; ++bpq) {
           /* zero output vector Ovec */
           #pragma unroll
@@ -41,6 +62,8 @@ for (size_t r = 0; r < R; ++r) {
           /* calculate a CBLOCK */
 #ifdef TIME_ANALYSE
           asm volatile(
+              "NOP\n\t"
+              "NOP\n\t"
               "CPUID\n\t"
               "RDTSC\n\t"
               "mov %%edx, %0\n\t"
@@ -52,7 +75,8 @@ for (size_t r = 0; r < R; ++r) {
             #pragma unroll
             for (size_t rk = 0; rk < KREG; ++rk) {
               //Fvec[rk] = _mm512_load_ps(ADDRESS_FILTER_RSCK(r, s, (ic + bc), ik + rk * VEC_LEN));
-              Fvec[rk] = _mm512_load_ps((F_pack + bc * K + ik + rk * VEC_LEN));
+              //Fvec[rk] = _mm512_load_ps((F_pack + bc * K + ik + rk * VEC_LEN));
+              Fvec[rk] = _mm512_load_ps((F_pack + bc * KREG * VEC_LEN + rk * VEC_LEN));
             }
             /* FMA */
             for (size_t rpq = 0; rpq < PQREG; ++rpq) {
@@ -72,6 +96,7 @@ for (size_t r = 0; r < R; ++r) {
              );
           start = (((unsigned long long)cycles_high << 32) | cycles_low);
           end = (((unsigned long long)cycles_high1 << 32) | cycles_low1);
+          ftime_cost += end - start;
           cout << "FMA cycles: " << end - start << endl;
 #endif
           /*  write output */
@@ -112,6 +137,7 @@ for (size_t r = 0; r < R; ++r) {
              );
           start = (((unsigned long long)cycles_high << 32) | cycles_low);
           end = (((unsigned long long)cycles_high1 << 32) | cycles_low1);
+          stime_cost += end -start;
           cout << "store cycles: " << end - start << endl;
 #endif
         }/*   end of for(PQBLOCK, bpq) */
@@ -120,10 +146,10 @@ for (size_t r = 0; r < R; ++r) {
     size_t ic = C / CBLOCK * CBLOCK; 
     size_t rc = C - ic;
     if (rc > 0) {
-      #include "kblock_pack-inl.h"
       #include "qblock_pack-inl.h"
       for (size_t k = 0; k < K / (KREG * VEC_LEN); ++k) {
         size_t ik = k * (KREG * VEC_LEN);
+        #include "kblock_pack-inl.h"
         for (size_t bpq = 0; bpq < PQBLOCK / PQREG; ++bpq) {
           #pragma unroll
           for (size_t rpq = 0; rpq < PQREG; ++rpq) {
@@ -135,7 +161,8 @@ for (size_t r = 0; r < R; ++r) {
             #pragma unroll
             for (size_t rk = 0; rk < KREG; ++rk) {
               //Fvec[rk] = _mm512_load_ps(ADDRESS_FILTER_RSCK(r, s, (ic + bc), ik + rk * VEC_LEN));
-              Fvec[rk] = _mm512_load_ps((F_pack + bc * K + ik + rk * VEC_LEN));
+              //Fvec[rk] = _mm512_load_ps((F_pack + bc * K + ik + rk * VEC_LEN));
+              Fvec[rk] = _mm512_load_ps((F_pack + bc * KREG * VEC_LEN  + rk * VEC_LEN));
             }
             for (size_t rpq = 0; rpq < PQREG; ++rpq) {
               Ivec = _mm512_set1_ps(*(I_pack + (bpq * PQREG + rpq) * CBLOCK + bc));

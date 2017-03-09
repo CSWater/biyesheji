@@ -43,8 +43,8 @@ cnn.o: cnn.cpp
 	$(BLITZ_CC) -c cnn.cpp $(CXXFLAGS)
 naive_conv.o: naive_conv.cpp
 	$(BLITZ_CC) -c naive_conv.cpp $(CXXFLAGS)
-blitz_forward.o: blitz_forward.cpp
-	$(BLITZ_CC) -c blitz_forward.cpp $(CXXFLAGS)
+blitz_forward.o: blitz_forward.s
+	$(BLITZ_CC) -c blitz_forward.s $(CXXFLAGS)
 blitz_forward.s: blitz_forward.cpp
 	$(BLITZ_CC) -S blitz_forward.cpp $(CXXFLAGS) 
 

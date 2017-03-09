@@ -17,10 +17,17 @@
  * =====================================================================================
  */
 //right pack
+//for (size_t bc = 0; bc < rc; ++bc) {
+//  for (size_t rk = 0; rk < K; ++rk) {
+//    F_pack[bc * K + rk] = ACCESS_FILTER_RSCK(r, s, (ic + bc), rk);
+//  }
+//}
+
+
+
 for (size_t bc = 0; bc < rc; ++bc) {
-  for (size_t rk = 0; rk < K; ++rk) {
-    F_pack[bc * K + rk] = ACCESS_FILTER_RSCK(r, s, (ic + bc), rk);
+  for(size_t rk = 0; rk < KREG * VEC_LEN; ++rk) {
+    F_pack[bc * KREG * VEC_LEN + rk] = ACCESS_FILTER_RSCK(r, s, (ic + bc), ik + rk);
   }
 }
-
 

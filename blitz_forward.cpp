@@ -79,9 +79,9 @@ void ConvolutionForwardVectorImpl(
   #define ADDRESS_OUTPUT_NPQK(i, j, k, v) (O + ((i * P + j) * Q + k) * K + v)
   #define ADDRESS_FILTER_RSCK(i, j, k, v) (F + ((i * S + j) * C + k) * K + v)
 
-  #define CBLOCK 128
+  #define CBLOCK 64
   #define VEC_LEN 16
-  #define PQBLOCK 36 // divided by PQREG
+  #define PQBLOCK 72 // divided by PQREG
   //#define PQREG 6
   //#define KREG 4
   #define PQREG 6
@@ -89,17 +89,18 @@ void ConvolutionForwardVectorImpl(
   __m512 Ovec[PQREG][KREG];
   __m512 Fvec[KREG];
   __m512 Ivec;
+#ifdef TIME_ANALYSE
   unsigned int cycles_low, cycles_high, cycles_low1,cycles_high1;
   unsigned long long start, end;
+  double ptime_cost = 1.0, ftime_cost = 0.0, stime_cost = 0.0, ztime_cost = 0.0, ktime_cost = 0.0;
+#endif
   if (K % (KREG * VEC_LEN)) {
     cout  << "Not supported K, please set it as a multiple of: " << VEC_LEN * KREG << endl;
   }
   float I_pack[PQBLOCK * CBLOCK];
-//  float F_pack[CBLOCK * KREG * VEC_LEN];
-  float F_pack[CBLOCK * 192];
-#ifdef TIME_ANAlYSE
-  #pragma omp parallel for private(I_pack, F_pack, Ovec, Fvec, Ivec)
-#endif
+  float F_pack[CBLOCK * KREG * VEC_LEN];
+  //float F_pack[CBLOCK * 192];
+#pragma omp parallel for private(I_pack, F_pack, Ovec, Fvec, Ivec)
   for (size_t n = 0; n < N; ++n) {
     for (size_t pq = 0; pq < P * Q / PQBLOCK; ++pq) {
       size_t ip = (pq * PQBLOCK) / Q;
@@ -110,4 +111,31 @@ void ConvolutionForwardVectorImpl(
     size_t iq = (P * Q / PQBLOCK) * PQBLOCK % Q;  // q remainder
     #include "vector/convolution_forward_qblock_avx512-inl.h"
   }
+#ifdef TIME_ANALYSE
+  cout << "ptime_cost:" << ptime_cost << " ktime_cost:" << ktime_cost << " ftime_cost:"\
+    << ftime_cost << " stime_cost:" << stime_cost << endl;
+  cout << "ptime rate:" << ptime_cost / (ptime_cost + ftime_cost + stime_cost + ktime_cost) <<  endl;
+  cout << "ktime rate:" << ktime_cost / (ptime_cost + ftime_cost + stime_cost + ktime_cost) <<  endl;
+  cout << "ftime rate:" << ftime_cost / (ptime_cost + ftime_cost + stime_cost + ktime_cost) <<  endl;
+  cout << "stime rate:" << stime_cost / (ptime_cost + ftime_cost + stime_cost + ktime_cost) <<  endl;
+#endif
 }
+
+/*
+ * vector vwt, vout[RB_SIZE]
+ * for ofm = 0.... OFM/SIMD-1
+ *   for ifm = 0...IFM/SIMD_WIDTH-1
+ *     for ib = 0...SIMD_WIDTH-1
+ *       for ofh=0...OFH-1
+ *         for ofw = 0... OFW/RB_SIZE-1
+ *           for rb = 0...RB_SIZE-1
+ *             vout[rb] = SETZERO()
+ *           for kh = 0...KH-1
+ *             for kw = 0 ... KW - 1 
+ *               vwt = LOAD(weight[ifm][ofm][kh][0])
+ *               for rb = 0 .,, RB_SIZE - 1
+ *                 VFMADD(EXTLOAD(input[ib][STRIDE*ofh + kh][STRIDE*ofw+kw][0], vwt, vout[rb])
+ *
+ *           for rb = 0 ... RB_SIZE - 1
+ *             STROE(vout, output[ofm][ofmh][ofmw*RB_SIZE + rb][0])
+ */
