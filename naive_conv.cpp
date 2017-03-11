@@ -102,3 +102,40 @@ void ConvolutionForwardNaiveImpl(
     }
   }
 }
+
+#define ACCESS_INPUT_NHWC(i, j, k, v) *(I + ((i * H + j) * W + k) * C + v)
+#define ACCESS_OUTPUT_NPQK(i, j, k, v) *(O + ((i * P + j) * Q + k) * K + v)
+#define ACCESS_FILTER_RSCK(i, j, k, v) *(F + ((i * S + j) * C + k) * K + v)
+//void blitz_forward(size_t N, size_t H, size_t W, size_t C, 
+//  size_t K, size_t R, size_t S, size_t P, size_t Q, size_t str_h,
+//  size_t str_w, size_t pad_h, size_t pad_w,
+//  float *input, float *output, float *filter) {
+// 
+//  /*  loop counters */
+//  size_t n, k, c, q, p, ih, iw, s, r;
+//#if defined(_OPENMP)
+//# pragma omp parallel for collapse(2) private(n, k, c, p, q, ih, iw, s, r)
+//#endif
+//  for(n = 0; n < N; ++n) {
+//    for(p = 0; p < P; ++p) {
+//      ih = p * str_h - pad_h;
+//      for(q = 0; q < Q; ++q) {
+//        iw = q * str_w - pad_w;
+//        for(c = 0; c < C; ++c) {
+//          for(r = 0; r < R; ++r) {
+//            for(s = 0; s < S; ++s) {
+//              for(k = 0; k < K; k += 16) {
+//                #pragma unroll
+//                for(int i = 0; i < 16; ++i) {
+//                  ACCESS(output, n, p, q, k + i, P, Q, K) += 
+//                    ACCESS(input, n, ih + r, iw + s, c, H, W, C) *
+//                    ACCESS(filter, r, s, c, k + i, S, C, K);
+//                }
+//              }
+//            }
+//          }
+//        }
+//      }
+//    }
+//  }
+//}

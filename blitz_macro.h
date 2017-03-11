@@ -27,10 +27,35 @@
 #define ACCESS(psrc, i, j, k, m, J, K, M) (*(psrc + (m) + (k) * M + (j) * K * M + (i) * J * K * M))
 #define drand48() ((double)rand() / RAND_MAX)
 
-
-
 //system configuration
 #define BLITZ_ALIGMENT 64
 
+//convolution inc
+#define ACCESS_INPUT_NHWC(i, j, k, v) *(I + ((i * H + j) * W + k) * C + v)
+#define ACCESS_OUTPUT_NPQK(i, j, k, v) *(O + ((i * P + j) * Q + k) * K + v)
+#define ACCESS_FILTER_RSCK(i, j, k, v) *(F + ((i * S + j) * C + k) * K + v)
+#define ADDRESS_OUTPUT_NPQK(i, j, k, v) (O + ((i * P + j) * Q + k) * K + v)
+#define ADDRESS_FILTER_RSCK(i, j, k, v) (F + ((i * S + j) * C + k) * K + v)
+#define CBLOCK 64
+#define VEC_LEN 16
+#define PQBLOCK 72 // divided by PQREG
+#define PQREG 6
+#define KREG 4
+#define KBLOCK 64
+
+//time
+#define _STRAT_POINT asm volatile(            \
+                  "CPUID\n\t"           \
+                  "RDTSC\n\t"           \
+                  "mov %%edx, %0\n\t"   \
+                  "mov %%eax, %1\n\t": "=r"(cycles_high), "=r"(cycles_high):: \
+                  "%rax", "%rbx", "%rcx", "%rdx");
+
+#define _END_POINT asm volatile(              \
+                "RDTSCP\n\t"            \
+                "mov %%edx, %0\n\t"     \
+                "mov %%eax, %1\n\t"     \
+                "CPUID\n\t": "=r"(cycles_high1), "=r"(cycles_low1)::  \
+                "%rax", "%rbx", "%rcx", "%rdx");
 
 #endif
