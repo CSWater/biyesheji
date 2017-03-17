@@ -17,10 +17,10 @@
  * =====================================================================================
  */
 
-#include"cnn.h"
+#include"../include/cnn.h"
+#include"../include/blitz_macro.h"
 #include<stdlib.h>
 #include<stdint.h>
-#include"blitz_macro.h"
 
 /********************************************
     internal functions
@@ -30,7 +30,7 @@ int blitz_malloc(void **memory, size_t size, size_t alignment) {
     size_t real_alignment = alignment << 1;
     buffer = malloc(size + real_alignment);
     if(buffer != 0) {
-        aligned =(void *)((((uintptr_t)buffer + alignment) & ~0x41) + alignment);
+        aligned =(void *)((((uintptr_t)buffer + alignment) & ~(real_alignment - 1)) + alignment);
         *memory = aligned;
         /* store the unaligned address in the momery for free it later */
         *(uintptr_t *)((uintptr_t)aligned - sizeof(uintptr_t)) = (uintptr_t)buffer;
@@ -115,7 +115,7 @@ void init_buf(float *buf, size_t size, int initPos, int initOne) {
     size_t i;
     zero_buf(buf, size);
     for(i = 0; i < size; ++i) {
-        buf[i] = (float)((initOne != 0) ? 1.0 : ((initPos != 0) ? drand48() : (0.05 - drand48()/10.0)));
+        buf[i] = 0.5;
     }
 }
 

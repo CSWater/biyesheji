@@ -17,8 +17,8 @@
  * =====================================================================================
  */
 #include<iostream>
-#include"naive_conv.h"
-#include"blitz_macro.h"
+#include"../include/naive_conv.h"
+#include"../include/blitz_macro.h"
 using std::cerr;
 using std::endl;
 

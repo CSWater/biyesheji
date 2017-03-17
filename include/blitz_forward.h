@@ -16,10 +16,10 @@
  *
  * =====================================================================================
  */
-#ifndef _FORWARD_H_
-#define _FORWARD_H_
+#ifndef _INCLUDE_BLITZ_FORWARD_H_
+#define _INCLUDE_BLITZ_FORWARD_H_
 #include<stddef.h>
-#include<immintrin.h>
+#include"kernel.h"
 
 /*  NHWC - RSCK */
 //void blitz_forward(size_t nImg, size_t ifh, size_t ifw, size_t nIfm, 

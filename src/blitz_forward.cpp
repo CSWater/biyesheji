@@ -17,13 +17,12 @@
  * =====================================================================================
  */
 
-#include"blitz_forward.h"
-#include"blitz_macro.h"
+#include"../include/blitz_forward.h"
+#include"../include/blitz_macro.h"
+#include"../include/cnn.h"
 #include<iostream>
-#include"vector/inner_kernel.h"
 using std::endl;
 using std::cout;
-
 
 void ConvolutionForwardVectorImpl(
   const float* I,
@@ -45,6 +44,8 @@ void ConvolutionForwardVectorImpl(
   }
 #pragma omp parallel for 
   for (size_t n = 0; n < N; ++n) {
+    float *I_pack = (float *)blitz_aligned_malloc(PQBLOCK * CBLOCK, 128);
+    float *F_pack = (float *)blitz_aligned_malloc(CBLOCK * KBLOCK, 64);
     size_t ip, iq, ic, rc;
     size_t pq, r, s, c;
     for (pq = 0; pq < P * Q / PQBLOCK; ++pq) {
@@ -55,13 +56,13 @@ void ConvolutionForwardVectorImpl(
           for (c = 0; c < C; c += CBLOCK) {
             ic = c;
             rc = CBLOCK;
-            inner_kernel(I, F, O, rc, ic, n, r, s, c, ip, iq,
+            forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
               str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
           }
           if (c > C) {
             ic = C + CBLOCK - c;
             rc = c - ic;
-            inner_kernel(I, F, O, rc, ic, n, r, s, c, ip, iq,
+            forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
               str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
           }
         }
@@ -74,13 +75,13 @@ void ConvolutionForwardVectorImpl(
         for (c = 0; c < C; c += CBLOCK) {
           ic = c;
           rc = CBLOCK;
-          inner_kernel(I, F, O, rc, ic, n, r, s, c, ip, iq,
+          forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
             str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
         }
         if (c > C) {
           ic = C + CBLOCK - c;
           rc = c - ic;
-          inner_kernel(I, F, O, rc, ic, n, r, s, c, ip, iq,
+          forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
             str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
         }
       }

@@ -16,8 +16,8 @@
  *
  * =====================================================================================
  */
-#ifndef BLITZ_TIEM_H_
-#define BLITZ_TIME_H_
+#ifndef _INCLUDE_BLITZ_TIEM_H_
+#define _INCLUDE_BLITZ_TIME_H_
 
 #if defined(_WIN32)
 #include<Windows.h>

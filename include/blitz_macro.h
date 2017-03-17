@@ -16,8 +16,8 @@
  *
  * =====================================================================================
  */
-#ifndef _BLITZ_MACRO_H_
-#define _BLITZ_MACRO_H_
+#ifndef _INCLUDE_BLITZ_MACRO_H_
+#define _INCLUDE_BLITZ_MACRO_H_
 
 #define EPSILON 0.001f
 //fetal error
@@ -25,7 +25,6 @@
 #define ABS(x) ((x) >  0 ? (x) : (-(x)))
 
 #define ACCESS(psrc, i, j, k, m, J, K, M) (*(psrc + (m) + (k) * M + (j) * K * M + (i) * J * K * M))
-#define drand48() ((double)rand() / RAND_MAX)
 
 //system configuration
 #define BLITZ_ALIGMENT 64
@@ -48,7 +47,7 @@
                   "CPUID\n\t"           \
                   "RDTSC\n\t"           \
                   "mov %%edx, %0\n\t"   \
-                  "mov %%eax, %1\n\t": "=r"(cycles_high), "=r"(cycles_high):: \
+                  "mov %%eax, %1\n\t": "=r"(cycles_high), "=r"(cycles_low):: \
                   "%rax", "%rbx", "%rcx", "%rdx");
 
 #define _END_POINT asm volatile(              \

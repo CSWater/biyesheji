@@ -16,8 +16,8 @@
  *
  * =====================================================================================
  */
-#ifndef _NAIVE_CONV_H_
-#define _NAIVE_CONV_H_
+#ifndef _INCLUDE_NAIVE_CONV_H_
+#define _INCLUDE_NAIVE_CONV_H_
 #include"cnn.h"
 
 void naive_conv_fp(naive_conv_t *param, const float *input, float *output, const float *filter);

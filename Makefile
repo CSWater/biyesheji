@@ -6,10 +6,9 @@ CONFIG_FILE := Makefile.config
 include $(CONFIG_FILE)
 
 #dirs
-BIN_DIR := bin
-BUILD_DIR := build
-SRC_ROOT := src
-LIB_DIR =:= lib
+BIN_DIR := ./bin
+BUILD_DIR := ./build
+SRC_DIR := ./src
 
 #compiler optimize options
 OPTIMIZE_OPTIONS := -O2
@@ -33,21 +32,31 @@ else
 endif
 
 #compiler options
-CXXFLAGS := -Wall -Wno-unused-parameter -Wunknown-pragmas -fPIC $(OPTIMIZE_OPTIONS) $(OPENMP_OPTIONS) $(MODE)
+CXXFLAGS := -Wall -Wno-unused-parameter $(OPTIMIZE_OPTIONS) $(OPENMP_OPTIONS) $(MODE) 
 
-main: main.o cnn.o naive_conv.o blitz_forward.o
-	$(BLITZ_CC) -o main cnn.o naive_conv.o blitz_forward.o main.o $(CXXFLAGS)
-main.o: main.cpp 
-	$(BLITZ_CC) -c main.cpp $(CXXFLAGS)
-cnn.o: cnn.cpp 
-	$(BLITZ_CC) -c cnn.cpp $(CXXFLAGS)
-naive_conv.o: naive_conv.cpp
-	$(BLITZ_CC) -c naive_conv.cpp $(CXXFLAGS)
-blitz_forward.o: blitz_forward.s
-	$(BLITZ_CC) -c blitz_forward.s $(CXXFLAGS)
-blitz_forward.s: blitz_forward.cpp
-	$(BLITZ_CC) -S blitz_forward.cpp $(CXXFLAGS) 
+SRC_LIST := $(wildcard $(SRC_DIR)/*.cpp)
+OBJ_LIST := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(notdir $(SRC_LIST)))
+TARGET := main
+BIN_TARGET := $(BIN_DIR)/$(TARGET)
+
+$(BIN_TARGET): $(OBJ_LIST)
+	$(BLITZ_CC) -o $@ $(OBJ_LIST) $(CXXFLAGS)
+$(BUILD_DIR)/%.o: $(BUILD_DIR)/%.s
+	$(BLITZ_CC) -o $@ -c $< $(CXXFLAGS)
+.SECONDARY:
+$(BUILD_DIR)/%.s: $(SRC_DIR)/%.cpp
+	$(BLITZ_CC) -o $@ -S $(CXXFLAGS) $<
+
+
+
+#inc test
+test:
+	@echo $(SRC_LIST)
+	@echo $(OBJ_LIST)
+	@echo $(BIN_TARGET)
 
 #clean
 clean:
-	rm -f *.o main *.s
+	find $(BUILD_DIR) -name *.o -exec rm -rf {} \;
+	find $(BUILD_DIR) -name *.s -exec rm -rf {} \;
+	find $(BIN_DIR) -name main -exec rm -rf {} \;

@@ -16,8 +16,8 @@
  *
  * =====================================================================================
  */
-#ifndef CNN_H_
-#define CNN_H_
+#ifndef _INCLUDE_CNN_H_
+#define _INCLUDE_CNN_H_
 
 #include<stddef.h>
 #include<omp.h>
