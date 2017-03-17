@@ -49,7 +49,7 @@ typedef struct {
 /***************************************************
  * common functions
  * *************************************************/
-void init_buf(float *buf, size_t size, int initPos, int initOne);
+void init_buf(float *buf, size_t size);
 
 void copy_buf(float const *src, float  *dst, size_t size);
 

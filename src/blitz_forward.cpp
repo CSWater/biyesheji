@@ -34,11 +34,6 @@ void ConvolutionForwardVectorImpl(
   size_t K, size_t P, size_t Q,
   size_t pad_h, size_t pad_w,
   size_t str_h, size_t str_w) {
-#ifdef TIME_ANALYSE
-  unsigned int cycles_low, cycles_high, cycles_low1,cycles_high1;
-  unsigned long long start, end;
-  double ptime_cost = 1.0, ftime_cost = 0.0, stime_cost = 0.0, ztime_cost = 0.0, ktime_cost = 0.0;
-#endif
   if (K % (KREG * VEC_LEN)) {
     cout  << "Not supported K, please set it as a multiple of: " << VEC_LEN * KREG << endl;
   }
@@ -87,14 +82,6 @@ void ConvolutionForwardVectorImpl(
       }
     }
   }
-#ifdef TIME_ANALYSE
-  cout << "ptime_cost:" << ptime_cost << " ktime_cost:" << ktime_cost << " ftime_cost:"\
-    << ftime_cost << " stime_cost:" << stime_cost << endl;
-  cout << "ptime rate:" << ptime_cost / (ptime_cost + ftime_cost + stime_cost + ktime_cost) <<  endl;
-  cout << "ktime rate:" << ktime_cost / (ptime_cost + ftime_cost + stime_cost + ktime_cost) <<  endl;
-  cout << "ftime rate:" << ftime_cost / (ptime_cost + ftime_cost + stime_cost + ktime_cost) <<  endl;
-  cout << "stime rate:" << stime_cost / (ptime_cost + ftime_cost + stime_cost + ktime_cost) <<  endl;
-#endif
 }
 
 /*

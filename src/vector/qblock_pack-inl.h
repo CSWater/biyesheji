@@ -29,4 +29,25 @@ for (size_t bpq = 0; bpq < PQBLOCK; ++bpq) {
   } 
 }
 
+//size_t aq = iq;
+//size_t ap = ip;
+//for(size_t j = 0; j < rc; j += VEC_LEN) {
+//  size_t ic_new = ic + j;
+//  for (size_t bpq = 0; bpq < PQBLOCK; ++bpq) {
+//    int ih = ap * str_h - pad_h + r;
+//    int iw = aq * str_w - pad_w + s;
+//    if (ih >= 0 && ih < H && iw >= 0 && iw < W) {
+//      for( size_t i = 0; i < VEC_LEN; ++i) {
+//        I_pack[PQBLOCK * j + i] = ACCESS_INPUT_NHWC(n, ih, iw, ic_new + i);
+//      }
+//    }  
+//    aq = ((aq + 1) < Q ? (aq + 1) : 0);
+//   ap = (aq == 0 ? (ap + 1) : ap);
+//   // aq += 1;
+//   // if (aq >= Q) {
+//   //   ap += 1;
+//   //   aq = 0;
+//   // } 
+//  }
+//}
 #endif  // SRC_UTILS_VECTOR_QBLOCK_PACK_INL_H_

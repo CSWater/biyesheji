@@ -111,9 +111,8 @@ void copy_RSCK_to_KCRS(const float *rsck, float *kcrs, size_t R, size_t S, size_
   }
 }
 
-void init_buf(float *buf, size_t size, int initPos, int initOne) {
+void init_buf(float *buf, size_t size) {
     size_t i;
-    zero_buf(buf, size);
     for(i = 0; i < size; ++i) {
         buf[i] = 0.5;
     }
@@ -123,7 +122,7 @@ void compare_buf(const float *buf_one, const float *buf_two, size_t size) {
   size_t i = 0;
   for(i = 0; i < size; ++i) {
     if(ABS(buf_one[i] - buf_two[i]) > EPSILON) {
-       cout << "i: " << i << " " << ABS(buf_one[i] - buf_two[i]) << endl;  
+       cout << "i: " << i << " " << buf_one[i] << " " <<  buf_two[i] << endl;  
     }
   }
 }

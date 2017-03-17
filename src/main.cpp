@@ -71,27 +71,27 @@ int main(int argc, char ** argv)
   size_t size_filter = K * C * R * S;
   size_t size_output = N * P * Q * K;
   /*  allocate memory */
-  //float *naive_input = (float *)blitz_aligned_malloc(size_input * sizeof(float), 64);
-  //float *naive_filter = (float *)blitz_aligned_malloc(size_filter * sizeof(float), 128);
-  //float *naive_output = (float *)blitz_aligned_malloc(size_output *  sizeof(float), 192);
+  float *naive_input = (float *)blitz_aligned_malloc(size_input * sizeof(float), 64);
+  float *naive_filter = (float *)blitz_aligned_malloc(size_filter * sizeof(float), 64);
+  float *naive_output = (float *)blitz_aligned_malloc(size_output *  sizeof(float), 64);
   //float *nchw = (float *)blitz_aligned_malloc(size_output * sizeof(float), 448);
   float *input = (float *)blitz_aligned_malloc(size_input * sizeof(float), 64);
   float *filter = (float *)blitz_aligned_malloc(size_filter * sizeof(float), 128);
   float *output = (float *)blitz_aligned_malloc(size_output * sizeof(float), 256);
   cout << input << " " << filter << " " << output << endl;
   //init data
- // zero_buf(naive_output, size_output);
- // init_buf(naive_input, size_input, 0, 0);
- // init_buf(naive_filter, size_filter, 0, 0);
+  zero_buf(naive_output, size_output);
+  init_buf(naive_input, size_input);
+  init_buf(naive_filter, size_filter);
   zero_buf(output, size_output);
-  init_buf(input, size_input, 0, 0);
-  init_buf(filter, size_filter, 0, 0);
-//  ConvolutionForwardNaiveImpl(naive_input, naive_filter, naive_output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
-//  ConvolutionForwardVectorImpl(input, filter, output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
+  init_buf(input, size_input);
+  init_buf(filter, size_filter);
+  ConvolutionForwardNaiveImpl(naive_input, naive_filter, naive_output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
+  ConvolutionForwardVectorImpl(input, filter, output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
   //check result
-//  copy_NHWC_to_NCHW(output, nchw, N, P, Q, K);
-//  cout <<  "*************correctness!*****************" << endl;
-//  compare_buf(naive_output, output, size_output);
+  //copy_NHWC_to_NCHW(output, nchw, N, P, Q, K);
+  cout <<  "*************correctness!*****************" << endl;
+  compare_buf(naive_output, output, size_output);
   //performance
   unsigned long long start, end;
   double cost_time = 0.0;
@@ -107,9 +107,9 @@ int main(int argc, char ** argv)
 #endif
   }
   /*   free memory */
-  //blitz_aligned_free(naive_input);
-  //blitz_aligned_free(naive_filter);
-  //blitz_aligned_free(naive_output);
+  blitz_aligned_free(naive_input);
+  blitz_aligned_free(naive_filter);
+  blitz_aligned_free(naive_output);
   //blitz_aligned_free(nchw);
   blitz_aligned_free(input);
   blitz_aligned_free(filter);
