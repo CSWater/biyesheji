@@ -43,13 +43,49 @@ void forward_kernel(const float * __restrict I, const float * __restrict F, floa
           Fvec[rk] = _mm512_load_ps((F_pack + bc * KBLOCK + rk * VEC_LEN));
           //Fvec[rk] = _mm512_load_ps(ADDRESS_FILTER_RSCK(r, s, (ic + bc), ik + rk * VEC_LEN));
         }
-        for (size_t rpq = 0; rpq < PQREG; ++rpq) {
-          Ivec = _mm512_set1_ps(*(I_pack +(bpq + rpq) * CBLOCK + bc));
+       float *I_iter1, *I_iter2, *I_iter3;
+       I_iter1 = (float *)(I_pack + bpq * CBLOCK + bc);
+       I_iter2 = (float *)(I_iter1 + 2 * CBLOCK);
+       I_iter3 = (float *)(I_iter1 + 4 * CBLOCK);
+       {
+          Ivec = _mm512_set1_ps(*I_iter1);
           #pragma unroll
           for (size_t rk = 0; rk < KREG; ++rk) {
-            Ovec[rpq][rk] = _mm512_fmadd_ps(Ivec, Fvec[rk], Ovec[rpq][rk]);
+            Ovec[0][rk] = _mm512_fmadd_ps(Ivec, Fvec[rk], Ovec[0][rk]);
           }
-        }
+          Ivec = _mm512_set1_ps(*(I_iter1 + CBLOCK));
+          #pragma unroll
+          for (size_t rk = 0; rk < KREG; ++rk) {
+            Ovec[1][rk] = _mm512_fmadd_ps(Ivec, Fvec[rk], Ovec[1][rk]);
+          }
+          Ivec = _mm512_set1_ps(*(I_iter2));
+          #pragma unroll
+          for (size_t rk = 0; rk < KREG; ++rk) {
+            Ovec[2][rk] = _mm512_fmadd_ps(Ivec, Fvec[rk], Ovec[2][rk]);
+          }
+          Ivec = _mm512_set1_ps(*(I_iter2 + CBLOCK));
+          #pragma unroll
+          for (size_t rk = 0; rk < KREG; ++rk) {
+            Ovec[3][rk] = _mm512_fmadd_ps(Ivec, Fvec[rk], Ovec[3][rk]);
+          }
+          Ivec = _mm512_set1_ps(*(I_iter3));
+          #pragma unroll
+          for (size_t rk = 0; rk < KREG; ++rk) {
+            Ovec[4][rk] = _mm512_fmadd_ps(Ivec, Fvec[rk], Ovec[4][rk]);
+          }
+          Ivec = _mm512_set1_ps(*(I_iter3 + CBLOCK));
+          #pragma unroll
+          for (size_t rk = 0; rk < KREG; ++rk) {
+            Ovec[5][rk] = _mm512_fmadd_ps(Ivec, Fvec[rk], Ovec[5][rk]);
+          }
+       }
+       // for (size_t rpq = 0; rpq < PQREG; ++rpq) {
+       //   Ivec = _mm512_set1_ps(*(I_pack +(bpq + rpq) * CBLOCK + bc));
+       //   #pragma unroll
+       //   for (size_t rk = 0; rk < KREG; ++rk) {
+       //     Ovec[rpq][rk] = _mm512_fmadd_ps(Ivec, Fvec[rk], Ovec[rpq][rk]);
+       //   }
+       // }
       }
       aq = (iq + bpq) % Q;
       ap = ip + (iq + bpq) / Q;
