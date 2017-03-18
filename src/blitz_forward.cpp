@@ -21,6 +21,7 @@
 #include"../include/blitz_macro.h"
 #include"../include/cnn.h"
 #include<iostream>
+#include<string.h>
 using std::endl;
 using std::cout;
 
@@ -37,8 +38,11 @@ void ConvolutionForwardVectorImpl(
   if (K % (KREG * VEC_LEN)) {
     cout  << "Not supported K, please set it as a multiple of: " << VEC_LEN * KREG << endl;
   }
-  float I_pack[PQBLOCK * CBLOCK];
-  float F_pack[KBLOCK * CBLOCK];
+  float I_pack[CBLOCK * PQBLOCK];
+  float F_pack[CBLOCK * KBLOCK];
+  memset(I_pack, 0, 4 * CBLOCK * PQBLOCK);
+  memset(F_pack, 0, 4 * CBLOCK * KBLOCK);
+
 #pragma omp parallel for private(I_pack, F_pack)
   for (size_t n = 0; n < N; ++n) {
     size_t ip, iq, ic, rc;

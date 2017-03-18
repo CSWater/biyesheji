@@ -74,7 +74,6 @@ int main(int argc, char ** argv)
   float *naive_input = (float *)blitz_aligned_malloc(size_input * sizeof(float), 64);
   float *naive_filter = (float *)blitz_aligned_malloc(size_filter * sizeof(float), 64);
   float *naive_output = (float *)blitz_aligned_malloc(size_output *  sizeof(float), 64);
-  //float *nchw = (float *)blitz_aligned_malloc(size_output * sizeof(float), 448);
   float *input = (float *)blitz_aligned_malloc(size_input * sizeof(float), 64);
   float *filter = (float *)blitz_aligned_malloc(size_filter * sizeof(float), 128);
   float *output = (float *)blitz_aligned_malloc(size_output * sizeof(float), 256);
@@ -89,7 +88,6 @@ int main(int argc, char ** argv)
   ConvolutionForwardNaiveImpl(naive_input, naive_filter, naive_output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
   ConvolutionForwardVectorImpl(input, filter, output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
   //check result
-  //copy_NHWC_to_NCHW(output, nchw, N, P, Q, K);
   cout <<  "*************correctness!*****************" << endl;
   compare_buf(naive_output, output, size_output);
   //performance
@@ -98,19 +96,16 @@ int main(int argc, char ** argv)
   double flops = N * K * P * Q * C * R * S * 2 * 1E-9;
   int i = 0;
   for(i = 0; i < iter; ++i) {
-#ifndef TIME_ANALYSE
     start = blitz_timer_tick();
     ConvolutionForwardVectorImpl(input, filter, output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
     end = blitz_timer_tick();
     cost_time = blitz_timer_duration(start, end);
     cout << "GFLOPS: " << flops / cost_time <<  endl;
-#endif
   }
   /*   free memory */
   blitz_aligned_free(naive_input);
   blitz_aligned_free(naive_filter);
   blitz_aligned_free(naive_output);
-  //blitz_aligned_free(nchw);
   blitz_aligned_free(input);
   blitz_aligned_free(filter);
   blitz_aligned_free(output);
