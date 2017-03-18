@@ -37,10 +37,10 @@ void ConvolutionForwardVectorImpl(
   if (K % (KREG * VEC_LEN)) {
     cout  << "Not supported K, please set it as a multiple of: " << VEC_LEN * KREG << endl;
   }
-#pragma omp parallel for 
+  float I_pack[PQBLOCK * CBLOCK];
+  float F_pack[KBLOCK * CBLOCK];
+#pragma omp parallel for private(I_pack, F_pack)
   for (size_t n = 0; n < N; ++n) {
-    float *I_pack = (float *)blitz_aligned_malloc(PQBLOCK * CBLOCK, 128);
-    float *F_pack = (float *)blitz_aligned_malloc(CBLOCK * KBLOCK, 64);
     size_t ip, iq, ic, rc;
     size_t pq, r, s, c;
     for (pq = 0; pq < P * Q / PQBLOCK; ++pq) {
