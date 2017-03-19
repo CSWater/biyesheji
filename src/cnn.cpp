@@ -114,7 +114,7 @@ void copy_RSCK_to_KCRS(const float *rsck, float *kcrs, size_t R, size_t S, size_
 void init_buf(float *buf, size_t size) {
     size_t i;
     for(i = 0; i < size; ++i) {
-        buf[i] = 0.5;
+        buf[i] = 0.5 + i * 0.00001;
     }
 }
 
