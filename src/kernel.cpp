@@ -39,10 +39,11 @@ void forward_kernel(const float * __restrict I, const float * __restrict F, floa
   //end = (((unsigned long long)cycles_high1 << 32) | cycles_low1);
   //cout << "Q block cycles: " << end - start << endl;
 
-  for(size_t k = 0; k < K; k += KBLOCK) {
+  #include"./vector/kblock_pack-inl.h" 
+  for(size_t k = 0; k < K; k += KREG * VEC_LEN) {
     size_t ik = k;
    // _STRAT_POINT
-    #include"./vector/kblock_pack-inl.h" 
+   //#include"./vector/kblock_pack-inl.h" 
    // _END_POINT
    // start = (((unsigned long long)cycles_high << 32) | cycles_low);
    // end = (((unsigned long long)cycles_high1 << 32) | cycles_low1);
@@ -59,7 +60,8 @@ void forward_kernel(const float * __restrict I, const float * __restrict F, floa
       for(size_t bc = 0; bc < CBLOCK; ++bc) {
         #pragma unroll
         for (size_t rk = 0; rk < KREG; ++rk) {
-          Fvec[rk] = _mm512_load_ps((F_pack + bc * KBLOCK + rk * VEC_LEN));
+          //Fvec[rk] = _mm512_load_ps((F_pack + bc * KBLOCK + rk * VEC_LEN));
+          Fvec[rk] = _mm512_load_ps((F_pack + ik + bc * KBLOCK + rk * VEC_LEN));
         }
         #pragma unroll
         for (size_t rpq = 0; rpq < PQREG; ++rpq) {

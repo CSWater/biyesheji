@@ -40,7 +40,7 @@
 #define PQBLOCK 126 // divided by PQREG
 #define PQREG 6
 #define KREG 4
-#define KBLOCK 64
+#define KBLOCK 192
 
 //time
 #define _STRAT_POINT asm volatile(            \
