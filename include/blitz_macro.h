@@ -35,7 +35,7 @@
 #define ACCESS_FILTER_RSCK(i, j, k, v) *(F + ((i * S + j) * C + k) * K + v)
 #define ADDRESS_OUTPUT_NPQK(i, j, k, v) (O + ((i * P + j) * Q + k) * K + v)
 #define ADDRESS_FILTER_RSCK(i, j, k, v) (F + ((i * S + j) * C + k) * K + v)
-#define CBLOCK 64
+#define CBLOCK 128
 #define VEC_LEN 16
 #define PQBLOCK 126 // divided by PQREG
 #define PQREG 6

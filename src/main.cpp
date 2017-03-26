@@ -85,11 +85,11 @@ int main(int argc, char ** argv)
   zero_buf(output, size_output);
   init_buf(input, size_input);
   init_buf(filter, size_filter);
-  ConvolutionForwardNaiveImpl(naive_input, naive_filter, naive_output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
+  //ConvolutionForwardNaiveImpl(naive_input, naive_filter, naive_output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
   ConvolutionForwardVectorImpl(input, filter, output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
   //check result
-  cout <<  "*************correctness!*****************" << endl;
-  compare_buf(naive_output, output, size_output);
+  //cout <<  "*************correctness!*****************" << endl;
+  //compare_buf(naive_output, output, size_output);
   //performance
   unsigned long long start, end;
   double cost_time = 0.0;

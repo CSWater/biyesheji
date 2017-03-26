@@ -32,23 +32,12 @@ void forward_kernel(const float * __restrict I, const float * __restrict F, floa
   __m512 Fvec[KREG];
   __m512 Ivec;
 
-  //_STRAT_POINT
   #include"./vector/qblock_pack-inl.h"
-  //_END_POINT
-  //start = (((unsigned long long)cycles_high << 32) | cycles_low);
-  //end = (((unsigned long long)cycles_high1 << 32) | cycles_low1);
-  //cout << "Q block cycles: " << end - start << endl;
 
   #include"./vector/kblock_pack-inl.h" 
   for(size_t k = 0; k < K; k += KREG * VEC_LEN) {
     size_t ik = k;
-   // _STRAT_POINT
    //#include"./vector/kblock_pack-inl.h" 
-   // _END_POINT
-   // start = (((unsigned long long)cycles_high << 32) | cycles_low);
-   // end = (((unsigned long long)cycles_high1 << 32) | cycles_low1);
-   // cout << "K block cycles: " << end - start << endl;
-
     for(size_t bpq = 0; bpq < PQBLOCK; bpq += PQREG) {
       #pragma unroll
       for(size_t rpq = 0; rpq < PQREG; ++rpq) {
@@ -56,7 +45,6 @@ void forward_kernel(const float * __restrict I, const float * __restrict F, floa
           Ovec[rpq][rk] = _mm512_set1_ps(0);
         }
       }
-     // _STRAT_POINT
       for(size_t bc = 0; bc < CBLOCK; ++bc) {
         #pragma unroll
         for (size_t rk = 0; rk < KREG; ++rk) {
@@ -72,11 +60,6 @@ void forward_kernel(const float * __restrict I, const float * __restrict F, floa
           }
         }
       }
-     // _END_POINT
-     // start = (((unsigned long long)cycles_high << 32) | cycles_low);
-     // end = (((unsigned long long)cycles_high1 << 32) | cycles_low1);
-     // cout << "FMA block cycles: " << end - start << endl;
-     // _STRAT_POINT
       aq = (iq + bpq) % Q;
       ap = ip + (iq + bpq) / Q;
       for (size_t rpq = 0; rpq < PQREG; ++rpq) {
@@ -94,10 +77,6 @@ void forward_kernel(const float * __restrict I, const float * __restrict F, floa
           aq = 0;
         }
       }
-     // _END_POINT
-     // start = (((unsigned long long)cycles_high << 32) | cycles_low);
-     // end = (((unsigned long long)cycles_high1 << 32) | cycles_low1);
-     // cout << "STORE block cycles: " << end - start << endl;
       if (ap >= P) {
         break;
       }

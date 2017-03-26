@@ -40,8 +40,6 @@ void ConvolutionForwardVectorImpl(
   }
   float I_pack[CBLOCK * PQBLOCK];
   float F_pack[CBLOCK * KBLOCK];
-  memset(I_pack, 0, 4 * CBLOCK * PQBLOCK);
-  memset(F_pack, 0, 4 * CBLOCK * KBLOCK);
 
 #pragma omp parallel for private(I_pack, F_pack)
   for (size_t n = 0; n < N; ++n) {
@@ -55,13 +53,13 @@ void ConvolutionForwardVectorImpl(
           for (c = 0; c < C; c += CBLOCK) {
             ic = c;
             rc = CBLOCK;
-            forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
+            forward_kernel_model(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
               str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
           }
           if (c > C) {
             ic = C + CBLOCK - c;
             rc = c - ic;
-            forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
+            forward_kernel_model(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
               str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
           }
         }
@@ -74,13 +72,13 @@ void ConvolutionForwardVectorImpl(
         for (c = 0; c < C; c += CBLOCK) {
           ic = c;
           rc = CBLOCK;
-          forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
+          forward_kernel_model(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
             str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
         }
         if (c > C) {
           ic = C + CBLOCK - c;
           rc = c - ic;
-          forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
+          forward_kernel_model(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
             str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
         }
       }
