@@ -28,13 +28,10 @@ void forward_kernel(const float * __restrict I, const float * __restrict F, floa
   size_t n, size_t r, size_t s, size_t c, size_t ip, size_t iq, size_t str_h, size_t str_w,
   size_t pad_h, size_t pad_w, size_t H, size_t W, size_t P, size_t Q, size_t K, size_t R, size_t S, size_t C);
 
-void forward_kernel_model(const float * __restrict I, const float * __restrict F, float * __restrict O, 
-  float * __restrict I_pack, float * __restrict F_pack, size_t rc, size_t ic,
-  size_t n, size_t r, size_t s, size_t c, size_t ip, size_t iq, size_t str_h, size_t str_w,
-  size_t pad_h, size_t pad_w, size_t H, size_t W, size_t P, size_t Q, size_t K, size_t R, size_t S, size_t C);
 
+void micro_kernel_4_6(float *a, float *b, float *c, size_t kc, size_t ldk);
 
+void pack_k(const float *k_start, float *F_pack);
 
-
-void micro_kernel_4_6(float *a, float *b, float *c, size_t kc, unsigned long ldk);
+void pack_pq(const float *I_start, float *I_pack, int q_size);
 #endif

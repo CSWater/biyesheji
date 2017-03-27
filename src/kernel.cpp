@@ -25,16 +25,16 @@ using std::endl;
 
 void forward_kernel(const float * __restrict I, const float * __restrict F, float * __restrict O, float * __restrict I_pack, float * __restrict F_pack, size_t rc, size_t ic,
   size_t n, size_t r, size_t s, size_t c, size_t ip, size_t iq, size_t str_h, size_t str_w,
-  size_t pad_h, size_t pad_w, size_t H, size_t W, size_t P, size_t Q, size_t K, size_t R, size_t S, size_t C){
+  size_t pad_h, size_t pad_w, size_t H, size_t W, size_t P, size_t Q, size_t K, size_t R, size_t S, size_t C) {
   unsigned cycles_high, cycles_low, cycles_high1, cycles_low1;
   unsigned long long start, end;
   __m512 Ovec[PQREG][KREG];
   __m512 Fvec[KREG];
   __m512 Ivec;
 
-  #include"./vector/qblock_pack-inl.h"
+  #include"./pack/qblock_pack-inl.h"
 
-  #include"./vector/kblock_pack-inl.h" 
+  #include"./pack/kblock_pack-inl.h" 
   for(size_t k = 0; k < K; k += KREG * VEC_LEN) {
     size_t ik = k;
    //#include"./vector/kblock_pack-inl.h" 

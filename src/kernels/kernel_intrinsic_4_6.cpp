@@ -17,18 +17,18 @@
  * =====================================================================================
  */
 #include"../../include/kernel.h"
-void micro_kernel_4_6(float *a, float *b, float *c, size_t kc, unsigned int ldk) {
-  _m512 Ovec[PQREG][KREG];
-  _m512 Fvec[KREG];
-  _m512 Fvec_n[KREG];
-  _m512 Ivec;
-  _m512 Ovec1, Ovec2, Ovec3, Ovec4;
+void micro_kernel_4_6(float *a, float *b, float *c, size_t kc, size_t ldk) {
+  __m512 Ovec[PQREG][KREG];
+  __m512 Fvec[KREG];
+  __m512 Fvec_n[KREG];
+  __m512 Ivec;
+  __m512 Ovec0, Ovec1, Ovec2, Ovec3;
   const float *I_ptr = a, *F_ptr = b;
   float *O_ptr = c;
 
   for (size_t i = 0; i < PQREG; ++i) {
     for (size_t j = 0; j < KREG; ++j) {
-      Ovec[i][j] = Ovec[i][j] = _m512_set1_ps(0);
+      Ovec[i][j] = Ovec[i][j] = _mm512_set1_ps(0);
     }
   }
   //Load K from L2 cache

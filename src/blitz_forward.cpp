@@ -53,13 +53,13 @@ void ConvolutionForwardVectorImpl(
           for (c = 0; c < C; c += CBLOCK) {
             ic = c;
             rc = CBLOCK;
-            forward_kernel_model(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
+            forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
               str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
           }
           if (c > C) {
             ic = C + CBLOCK - c;
             rc = c - ic;
-            forward_kernel_model(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
+            forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
               str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
           }
         }
@@ -72,13 +72,13 @@ void ConvolutionForwardVectorImpl(
         for (c = 0; c < C; c += CBLOCK) {
           ic = c;
           rc = CBLOCK;
-          forward_kernel_model(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
+          forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
             str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
         }
         if (c > C) {
           ic = C + CBLOCK - c;
           rc = c - ic;
-          forward_kernel_model(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
+          forward_kernel(I, F, O, I_pack, F_pack, rc, ic, n, r, s, c, ip, iq,
             str_h, str_w, pad_h, pad_w, H, W, P, Q, K, R, S, C);
         }
       }

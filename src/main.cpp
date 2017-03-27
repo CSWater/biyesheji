@@ -86,7 +86,7 @@ int main(int argc, char ** argv)
   init_buf(input, size_input);
   init_buf(filter, size_filter);
   //ConvolutionForwardNaiveImpl(naive_input, naive_filter, naive_output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
-  ConvolutionForwardVectorImpl(input, filter, output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
+  ConvolutionForwardVectorImplNew(input, filter, output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
   //check result
   //cout <<  "*************correctness!*****************" << endl;
   //compare_buf(naive_output, output, size_output);
@@ -97,7 +97,7 @@ int main(int argc, char ** argv)
   int i = 0;
   for(i = 0; i < iter; ++i) {
     start = blitz_timer_tick();
-    ConvolutionForwardVectorImpl(input, filter, output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
+    ConvolutionForwardVectorImplNew(input, filter, output, N, C, H, W, R, S, K, P, Q, pad_h, pad_w, str_h, str_w);
     end = blitz_timer_tick();
     cost_time = blitz_timer_duration(start, end);
     cout << "GFLOPS: " << flops / cost_time <<  endl;

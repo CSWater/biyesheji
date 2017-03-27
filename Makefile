@@ -32,9 +32,14 @@ else
 endif
 
 #compiler options
-CXXFLAGS := -Wall -Wno-unused-parameter $(OPTIMIZE_OPTIONS) $(OPENMP_OPTIONS) $(MODE) 
+ifeq ($(MODE), DEBUG)
+	CXXFLAGS := -Wall -Wno-unused-parameter -g -O0
+else 
+	CXXFLAGS := -Wall -Wno-unused-parameter $(OPTIMIZE_OPTIONS) $(OPENMP_OPTIONS)
+endif
+	
 
-SRC_LIST := $(wildcard $(SRC_DIR)/*.cpp)
+SRC_LIST := $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/kernels/*.cpp) $(wildcard $(SRC_DIR)/pack/*.cpp)
 OBJ_LIST := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(notdir $(SRC_LIST)))
 TARGET := main
 BIN_TARGET := $(BIN_DIR)/$(TARGET)
@@ -46,8 +51,10 @@ $(BUILD_DIR)/%.o: $(BUILD_DIR)/%.s
 .SECONDARY:
 $(BUILD_DIR)/%.s: $(SRC_DIR)/%.cpp
 	$(BLITZ_CC) -o $@ -S $(CXXFLAGS) $<
-
-
+$(BUILD_DIR)/%.s: $(SRC_DIR)/kernels/%.cpp
+	$(BLITZ_CC) -o $@ -S $(CXXFLAGS) $<
+$(BUILD_DIR)/%.s: $(SRC_DIR)/pack/%.cpp
+	$(BLITZ_CC) -o $@ -S $(CXXFLAGS) $<
 
 #inc test
 test:
