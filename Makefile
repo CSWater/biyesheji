@@ -35,7 +35,7 @@ endif
 ifeq ($(MODE), DEBUG)
 	CXXFLAGS := -Wall -Wno-unused-parameter -g -O0
 else 
-	CXXFLAGS := -Wall -Wno-unused-parameter $(OPTIMIZE_OPTIONS) $(OPENMP_OPTIONS)
+	CXXFLAGS := -Wall -Wno-unused-parameter $(OPTIMIZE_OPTIONS) $(OPENMP_OPTIONS) -falign-functions=16 -no-prec-div
 endif
 	
 

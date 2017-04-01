@@ -7,12 +7,12 @@
 
 export KMP_PLACE_THREADS=1T
 export KMP_AFFINITY=compact,granularity=fine
-export OMP_NUM_THREADS=66
+export OMP_NUM_THREADS=68
 #phase iter H W N C K R S pad str P Q 
 ###forward:
 #numactl -m 1 ./samples/mic/convolution/convolution forward convolution_blas_gemm 2 224 224 128 3   64  11 11 3 4 55 55
 #numactl -m 1 ./bin/main forward convolution_blas_gemm 3 27  27  128 128  192 5  5  2 1 27 27
-numactl -m 1 ./bin/main forward convolution_blas_gemm 3 31  31  128 128  192 5  5  0 1 27 27
+numactl -m 1 ./bin/main forward convolution_blas_gemm 3 31  31  136 128  192 5  5  0 1 27 27
 #numactl -m 1 ./main forward convolution_blas_gemm 2 13  13  128 192 384 3  3  1 1 13 13
 #numactl -m 1 ./main forward convolution_blas_gemm 2 13  13  128 384 256 3  3  1 1 13 13
 #numactl -m 1 ./main forward convolution_blas_gemm 2 13  13  128 256 256 3  3  1 1 13 13
